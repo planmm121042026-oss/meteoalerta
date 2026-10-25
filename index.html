@@ -46,11 +46,13 @@
   button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));border-color:transparent;font-weight:600;color:#05121f}
   button.ghost{background:transparent}
   button.off{opacity:.55}
-  .locbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 14px;
-    padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
-  .locbar .pin{font-size:18px}
-  .locbar b{font-size:15px}
-  .locbar .meta{color:var(--mut);font-size:12.5px}
+  .loc-inline{margin-top:5px;min-width:0}
+  .loc-line{display:flex;align-items:center;gap:7px;flex-wrap:wrap;line-height:1.45}
+  .loc-line .pin{font-size:14px}
+  .loc-line b{font-size:12.5px;font-weight:600}
+  .loc-line button{padding:2px 8px;font-size:10.5px;border-radius:8px}
+  .loc-sub{font-size:10.5px;color:var(--mut);line-height:1.45;margin-top:1px;overflow-wrap:anywhere}
+  #btnRopa{margin-left:auto}
   .grid{display:grid;gap:14px}
   .cols{grid-template-columns:1.15fr .85fr}
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--sh);
@@ -267,9 +269,10 @@
     header.top{gap:9px;margin-bottom:12px}
     .tools{width:100%}
     .tools button{flex:1;justify-content:center;padding:7px 8px;font-size:12px}
-    .locbar{padding:10px 12px}
-    .locbar .meta{font-size:11.5px}
-    .locbar button{padding:6px 9px;font-size:12px}
+    .loc-line{gap:6px}
+    .loc-line b{font-size:12px}
+    .loc-line button{padding:2px 7px;font-size:10px}
+    .loc-sub{font-size:10px}
     .card{padding:13px;border-radius:14px}
     .card h2{font-size:11.5px}
     .now{gap:12px}
@@ -279,14 +282,16 @@
     .kpi{padding:9px 10px}
     .kpi .val{font-size:16.5px}
     canvas{height:250px}
-    .hrow{grid-template-columns:54px 82px 1fr;gap:7px;padding:6px 8px}
+    .hrow{grid-template-columns:52px 64px 1fr;gap:7px;padding:6px 8px}
     .hrow.head{display:none}
     .hrow .h-icon{display:none}
     .hrow .h-temp{font-size:15px}
     .hrow .h-temp small{display:none}
-    .hrow .h-rad .badge{display:none}
-    .hrow .h-rad .barline{grid-template-columns:1fr 76px}
-    .hrow .h-rad .bar{display:none}
+    .hrow .h-rad .barline{grid-template-columns:auto 1fr;grid-template-areas:"b v" "bar bar";gap:4px 7px}
+    .hrow .h-rad .badge{display:inline-block;grid-area:b;font-size:9.5px;padding:2px 6px;white-space:nowrap}
+    .hrow .h-rad .bar{grid-area:bar;display:block;height:5px}
+    .hrow .h-rad .val{grid-area:v;font-size:13px}
+    .hrow .h-rad .val u{font-size:9.5px}
     .day{grid-template-columns:76px 28px 1fr 72px;gap:8px;padding:8px 10px}
     .day .dn{font-size:12px}
     .srow{grid-template-columns:46px 1fr 78px;gap:7px;font-size:11.5px;padding:7px 8px}
@@ -332,15 +337,38 @@
     </div>
   </header>
 
-  <div class="locbar">
-    <span class="pin">📍</span>
-    <div>
-      <b id="placeName">Obteniendo ubicación…</b>
-      <div class="meta" id="placeMeta">Permiso de geolocalización del navegador</div>
+  <div class="grid" style="margin-bottom:14px">
+    <div class="card">
+      <div class="cardhead">
+        <div>
+          <h2>Ahora mismo</h2>
+          <div class="loc-inline">
+            <div class="loc-line">
+              <span class="pin">📍</span>
+              <b id="placeName">Obteniendo ubicación…</b>
+              <button id="btnLocate" class="ghost mini" title="Volver a mi ubicación actual (GPS)">🎯 GPS</button>
+            </div>
+            <div class="loc-sub"><span id="updated">—</span> · <span id="placeMeta">Permiso de geolocalización del navegador</span></div>
+          </div>
+        </div>
+        <button id="btnRopa" class="ghost mini" title="Recomendación de vestimenta para tu jornada 07:00 → 17:00">👕 Sugerencia de ropa</button>
+      </div>
+      <div class="now">
+        <div class="ico" id="nowIcon">🌤️</div>
+        <div>
+          <div class="temp" id="nowTemp">—<span>°C</span></div>
+          <div class="desc" id="nowDesc">—</div>
+          <div class="feels" id="nowFeels">—</div>
+        </div>
+      </div>
+      <div class="kpis" id="kpis"></div>
     </div>
-    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
-      <span class="meta" id="updated">—</span>
-      <button id="btnLocate" class="ghost mini" title="Volver a mi ubicación actual (GPS)">🎯 GPS</button>
+  </div>
+
+  <div class="grid" style="margin-bottom:14px">
+    <div class="card">
+      <h2>Alertas activas</h2>
+      <div class="alerts" id="activeAlerts"><div class="empty">Evaluando condiciones…</div></div>
     </div>
   </div>
 
@@ -355,29 +383,6 @@
   </div>
 
   <div class="grid" style="margin-bottom:14px">
-    <div class="card">
-      <h2>Alertas activas</h2>
-      <div class="alerts" id="activeAlerts"><div class="empty">Evaluando condiciones…</div></div>
-    </div>
-  </div>
-
-  <div class="grid cols" style="margin-bottom:14px">
-    <div class="card">
-      <div class="cardhead">
-        <h2>Ahora mismo</h2>
-        <button id="btnRopa" class="ghost mini" title="Recomendación de vestimenta para tu jornada 07:00 → 17:00">👕 Sugerencia de ropa</button>
-      </div>
-      <div class="now">
-        <div class="ico" id="nowIcon">🌤️</div>
-        <div>
-          <div class="temp" id="nowTemp">—<span>°C</span></div>
-          <div class="desc" id="nowDesc">—</div>
-          <div class="feels" id="nowFeels">—</div>
-        </div>
-      </div>
-      <div class="kpis" id="kpis"></div>
-    </div>
-
     <div class="card">
       <h2>Índice UV (OMS)</h2>
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px">
@@ -966,7 +971,9 @@ function avisoUbicacionBloqueada(){
     </div>
     <button class="primary" id="avisoUbiBtn" style="align-self:center">Usar mi ubicación</button>`;
   const wrap = document.querySelector('.wrap');
-  wrap.insertBefore(bar, wrap.children[1]);
+  const alertsCard = document.getElementById('activeAlerts')?.closest('.grid');
+  if (alertsCard) wrap.insertBefore(bar, alertsCard.nextSibling);
+  else wrap.insertBefore(bar, wrap.children[1]);
   document.getElementById('avisoUbiBtn').onclick = async () => {
     bar.remove();
     await boot(true);
